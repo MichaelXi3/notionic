@@ -1,7 +1,7 @@
 const CONFIG = {
   // profile setting (required)
   profile: {
-    name: "Spherex",
+    name: "Sphere",
     image: "/avatar.svg", // If you want to create your own notion avatar, check out https://notion-avatar.vercel.app
     role: "WAFL File System Engineer",
     bio: "I develop next generation storage systems.",
@@ -18,7 +18,7 @@ const CONFIG = {
   ],
   // blog setting (required)
   blog: {
-    title: "Spherex Think Log",
+    title: "Sphere",
     description: "Welcome to Sphere",
     scheme: "system", // 'light' | 'dark' | 'system'
   },
