@@ -1,7 +1,7 @@
 const CONFIG = {
   // profile setting (required)
   profile: {
-    name: "Sphere",
+    name: "Void",
     image: "/avatar.svg", // If you want to create your own notion avatar, check out https://notion-avatar.vercel.app
     role: "WAFL File System Engineer",
     bio: "I develop next generation storage systems.",
@@ -11,21 +11,21 @@ const CONFIG = {
     instagram: "michaelxiii3",
   },
   projects: [
-    {
-      name: `notionic`,
-      href: "https://github.com/MichaelXi3/notionic",
-    },
+    // {
+    //   name: `notionic`,
+    //   href: "https://github.com/MichaelXi3/notionic",
+    // },
   ],
   // blog setting (required)
   blog: {
-    title: "Sphere",
-    description: "Welcome to Sphere",
+    title: "Void",
+    description: "The pale blue dot.",
     scheme: "system", // 'light' | 'dark' | 'system'
   },
 
   // CONFIG configration (required)
   link: "https://notionic-five-delta.vercel.app/",
-  since: 2024, // If leave this empty, current year will be used.
+  since: , // If leave this empty, current year will be used.
   lang: "en-US", // ['en-US', 'zh-CN', 'zh-HK', 'zh-TW', 'ja-JP', 'es-ES', 'ko-KR']
   ogImageGenerateURL: "https://og-image-korean.vercel.app", // The link to generate OG image, don't end with a slash
   seo: {
