@@ -10,7 +10,7 @@ const CONFIG = {
     github: "MichaelXi3",
     instagram: "michaelxiii3",
   },
-  projects: [
+  projects: [{},
     // {
     //   name: `notionic`,
     //   href: "https://github.com/MichaelXi3/notionic",
