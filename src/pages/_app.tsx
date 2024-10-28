@@ -9,14 +9,11 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout || ((page) => page)
 
   return (
-    <>
-      <QueryClientProvider client={queryClient}>
-        <Hydrate state={pageProps.dehydratedState}>
-          <RootLayout>{getLayout(<Component {...pageProps} />)}</RootLayout>
-        </Hydrate>
-      </QueryClientProvider>
-      <Analytics />
-    </>
+    <QueryClientProvider client={queryClient}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <RootLayout>{getLayout(<Component {...pageProps} />)}</RootLayout>
+      </Hydrate>
+    </QueryClientProvider>
   )
 }
 
