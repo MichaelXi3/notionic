@@ -11,7 +11,8 @@
     "build": "next build",
     "start": "next start",
     "postbuild": "next-sitemap --config next-sitemap.config.js",
-    "lint": "next lint"
+    "lint": "next lint",
+    "install": "npm install --legacy-peer-deps"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
