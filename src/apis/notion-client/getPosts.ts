@@ -5,6 +5,7 @@ import { idToUuid } from "notion-utils"
 import getAllPageIds from "src/libs/utils/notion/getAllPageIds"
 import getPageProperties from "src/libs/utils/notion/getPageProperties"
 import { TPosts } from "src/types"
+import { retryWithBackoff } from "src/libs/utils/retry"
 
 /**
  * @param {{ includePages: boolean }} - false: posts only / true: include pages
@@ -15,7 +16,7 @@ export const getPosts = async () => {
   let id = CONFIG.notionConfig.pageId as string
   const api = new NotionAPI()
 
-  const response = await api.getPage(id)
+  const response = await retryWithBackoff(() => api.getPage(id))
   id = idToUuid(id)
   const collection = Object.values(response.collection)[0]?.value
   const block = response.block
