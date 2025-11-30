@@ -6,6 +6,7 @@ import { TPost } from "../../../types"
 import Image from "next/image"
 import Category from "../../../components/Category"
 import styled from "@emotion/styled"
+import ViewCount from "../../../components/ViewCount"
 
 type Props = {
   data: TPost
@@ -43,6 +44,12 @@ const PostCard: React.FC<Props> = ({ data }) => {
                 CONFIG.lang
               )}
             </div>
+            {CONFIG.viewCount?.enable && (
+              <>
+                <div className="separator">•</div>
+                <ViewCount slug={data.slug} shouldIncrement={false} />
+              </>
+            )}
           </div>
           <div className="summary">
             <p>{data.summary}</p>
@@ -142,6 +149,10 @@ const StyledWrapper = styled(Link)`
           @media (min-width: 768px) {
             margin-left: 0;
           }
+        }
+        .separator {
+          color: ${({ theme }) => theme.colors.gray10};
+          font-size: 0.875rem;
         }
       }
       > .summary {

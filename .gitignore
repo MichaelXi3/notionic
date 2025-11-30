@@ -37,3 +37,6 @@ yarn-error.log*
 # public/sitemap.xml
 
 /.firebase
+
+# view count storage
+.view-counts.json

@@ -5,6 +5,7 @@ import { formatDate } from "src/libs/utils"
 import Image from "next/image"
 import React from "react"
 import styled from "@emotion/styled"
+import ViewCount from "src/components/ViewCount"
 
 type Props = {
   data: TPost
@@ -38,6 +39,12 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                 CONFIG.lang
               )}
             </div>
+            {CONFIG.viewCount?.enable && (
+              <>
+                <div className="hr"></div>
+                <ViewCount slug={data.slug} shouldIncrement={true} />
+              </>
+            )}
           </div>
           <div className="mid">
             {data.tags && (

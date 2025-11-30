@@ -1,35 +1,271 @@
-## Features
+# Notionic
 
-**Writing posts using notion**
+## 项目架构
 
-- No need of commiting to Github for posting anything to your website.
-- Posts made on Notion are automaticaly updated on your site.
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Notion Database (CMS)                │
+│                     ↓ (Notion API)                      │
+└─────────────────────────────────────────────────────────┘
+                             ↓
+┌─────────────────────────────────────────────────────────┐
+│                   Next.js Application                   │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  Data Layer (APIs)                                │  │
+│  │  • getPosts() - 获取文章列表                        │  │
+│  │  • getRecordMap() - 获取文章详情                    │  │
+│  │  • /api/views/[slug] - 浏览次数 API                │  │
+│  └───────────────────────────────────────────────────┘  │
+│                             ↓                           │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  State Management (React Query)                   │  │
+│  │  • usePostsQuery() - 文章列表查询                   │  │
+│  │  • usePostQuery() - 单篇文章查询                    │  │
+│  │  • useViewCount() - 浏览次数查询                    │  │
+│  └───────────────────────────────────────────────────┘  │
+│                             ↓                           │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  Pages (Routes)                                   │  │
+│  │  • / (index) - 首页/文章列表                        │  │
+│  │  • /[slug] - 文章详情页                             │  │
+│  │  • /404 - 错误页面                                 │  │
+│  └───────────────────────────────────────────────────┘  │
+│                             ↓                           │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  Components                                       │  │
+│  │  • Feed - 文章列表组件                              │  │
+│  │  •   └─ PostCard - 文章卡片 (+ViewCount)           │  │
+│  │  • Detail - 文章详情组件                            │  │
+│  │  •   └─ PostHeader - 文章头部 (+ViewCount)         │  │
+│  │  • ViewCount - 浏览次数组件                         │  │
+│  │  • Category, Tag, MetaConfig                      │  │
+│  └───────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+```
 
-**Use as a page as resume**
+## 代码结构
 
-- Useful for generating full page sites using Notion.
-- Can be used for Resume, Portfolios etc.
+```
+notionic/
+├── 📄 site.config.js            # 站点配置（profile, blog, plugins）
+├── 📄 next.config.js            # Next.js 配置
+├── 📄 package.json              # 依赖管理
+│
+├── 📁 src/
+│   ├── 📁 apis/                # API 调用层
+│   │   └── notion-client/      # Notion API 封装
+│   │       ├── getPosts.ts     # 获取所有文章
+│   │       └── getRecordMap.ts # 获取文章详情
+│   │
+│   ├── 📁 pages/               # Next.js 页面路由
+│   │   ├── index.tsx           # 首页（文章列表）
+│   │   ├── [slug].tsx          # 动态路由（文章详情）
+│   │   ├── _app.tsx            # App 入口
+│   │   ├── _document.tsx       # Document 配置
+│   │   └── api/                # API Routes
+│   │       ├── revalidate.ts   # ISR 重新验证
+│   │       └── views/
+│   │           └── [slug].ts   # 浏览次数 API
+│   │
+│   ├── 📁 routes/              # 页面级组件
+│   │   ├── Feed/               # 文章列表页
+│   │   │   ├── index.tsx
+│   │   │   ├── PostList/
+│   │   │   │   ├── PostCard.tsx      # (+ViewCount)
+│   │   │   │   └── PinnedPosts.tsx
+│   │   │   ├── FeedHeader/
+│   │   │   ├── ProfileCard.tsx
+│   │   │   └── TagList.tsx
+│   │   │
+│   │   └── Detail/             # 文章详情页
+│   │       ├── index.tsx
+│   │       └── PostDetail/
+│   │           ├── PostHeader.tsx    # (+ViewCount)
+│   │           ├── PostFooter.tsx
+│   │           ├── CommentBox/
+│   │           └── NotionRenderer/
+│   │
+│   ├── 📁 components/          # 通用组件
+│   │   ├── Category/
+│   │   ├── Tag.tsx
+│   │   ├── Emoji.tsx
+│   │   ├── MetaConfig/
+│   │   └── ViewCount/
+│   │       └── index.tsx       # 浏览次数组件
+│   │
+│   ├── 📁 hooks/               # 自定义 Hooks
+│   │   ├── usePostsQuery.ts    # 文章列表查询
+│   │   ├── usePostQuery.ts     # 单文章查询
+│   │   ├── useCategoriesQuery.ts
+│   │   ├── useTagsQuery.ts
+│   │   ├── useScheme.ts        # 主题切换
+│   │   └── useViewCount.ts     # ⭐ NEW - 浏览次数查询
+│   │
+│   ├── 📁 types/               # TypeScript 类型
+│   │   └── index.ts            # (+views 字段) ⭐
+│   │
+│   ├── 📁 libs/                # 工具库
+│   │   ├── react-query/        # React Query 配置
+│   │   ├── gtag.ts             # Google Analytics
+│   │   └── utils/              # 工具函数
+│   │       └── notion/         # Notion 相关工具
+│   │
+│   ├── 📁 styles/              # 样式配置
+│   │   ├── colors.ts
+│   │   ├── theme.ts
+│   │   └── media.ts
+│   │
+│   └── 📁 layouts/             # 布局组件
+│       └── RootLayout/
+│           ├── Header/
+│           │   ├── Logo.tsx
+│           │   ├── NavBar.tsx
+│           │   └── ThemeToggle.tsx
+│           └── ThemeProvider/
+│
+└── 📁 public/                  # 静态资源
+    ├── avatar.svg
+    ├── favicon.ico
+    └── apple-touch-icon.png
+```
 
-**Customisable and Supports various plugin through CONFIG**
+## 数据流
 
-- Your profile information can be updated through Config. (`site.config.js`)
-- Plugins support includes, Google Analytics, Search Console and also Commenting using Github Issues(Utterances) or Cusdis.
+### 1. 文章数据流
 
-## Getting Started
+```
+Notion Database
+      ↓
+[getPosts API]
+      ↓
+React Query (usePostsQuery)
+      ↓
+Feed Component → PostCard
+      ↓
+User clicks → Navigate to /[slug]
+      ↓
+[getRecordMap API]
+      ↓
+React Query (usePostQuery)
+      ↓
+Detail Component → PostDetail → NotionRenderer
+```
 
-1. Star this repo.
-2. [Fork](https://github.com/morethanmin/morethan-log/fork) the repo to your Profile.
-3. Duplicate [this Notion template](https://morethanmin.notion.site/12c38b5f459d4eb9a759f92fba6cea36?v=2e7962408e3842b2a1a801bf3546edda), and Share to Web.
-4. Copy the Web Link and keep note of the Notion Page Id from the Link which will be in this format [username.notion.site/`NOTION_PAGE_ID`?v=`VERSION_ID`]. 
-5. Clone your forked repo and then customize `site.config.js` based on your preference.
-6. Deploy on Vercel, with the following environment variables.
+### 2. 浏览次数数据流
 
-   - `NOTION_PAGE_ID` (Required): The Notion page Id got from the Share to Web URL. This is not the entire URL, but just the NOTION_PAGE_ID part as shown above.
-   - `NEXT_PUBLIC_GOOGLE_MEASUREMENT_ID` : For Google analytics Plugin.
-   - `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` : For Google search console Plugin.
-   - `NEXT_PUBLIC_NAVER_SITE_VERIFICATION` : For Naver search advisor Plugin.
-   - `NEXT_PUBLIC_UTTERANCES_REPO` : For Utterances Plugin.
+```
+User visits /[slug]
+      ↓
+PostHeader mounts
+      ↓
+useViewCount Hook
+      ↓ (1 second delay)
+POST /api/views/[slug]  (increment)
+      ↓
+Views count stored (Memory/Redis)
+      ↓
+GET /api/views/[slug]   (fetch)
+      ↓
+React Query cache (5 min)
+      ↓
+ViewCount Component
+      ↓
+Display: 123
+```
 
-## License
+## 技术栈
 
-The [MIT License](LICENSE).
+### 核心框架
+- **Next.js 13** - React 框架（SSG/ISR）
+- **React 18** - UI 库
+- **TypeScript** - 类型系统
+
+### 数据管理
+- **Notion API** - 内容管理（CMS）
+- **React Query** - 状态管理和缓存
+- **notion-client** - Notion API 封装库
+
+### 样式方案
+- **Emotion** - CSS-in-JS
+- **Radix Colors** - 颜色系统
+
+### 其他工具
+- **react-notion-x** - Notion 内容渲染
+- **Mermaid** - 图表支持
+- **Prism.js** - 代码高亮
+- **Vercel Analytics** - 分析统计
+
+## 项目功能
+
+-  基于 Notion 的内容管理
+-  文章分类和标签
+-  全文搜索
+-  评论系统（Utterances/Cusdis）
+-  Google Analytics 集成
+-  暗色/亮色主题切换
+-  SEO 优化（Meta tags, Sitemap）
+-  响应式设计
+-  ISR（增量静态生成）
+-  浏览次数统计
+-  实时计数 API
+-  缓存优化（React Query）
+-  可配置开关
+
+## 性能优化
+
+### 渲染策略
+- **SSG** (Static Site Generation) - 首次构建生成静态页面
+- **ISR** (Incremental Static Regeneration) - 按需重新验证
+  - 默认重新验证时间: 21600 * 7 秒 (≈ 7 天)
+  - API 端点: `/api/revalidate`
+
+### 缓存策略
+- **React Query**
+  - 文章数据: 默认缓存
+  - 浏览次数: 5 分钟 staleTime
+
+### 图片优化
+- **Next.js Image** - 自动优化、懒加载
+
+## 安全性
+
+### 环境变量
+```env
+NOTION_PAGE_ID              # Notion 数据库 ID
+TOKEN_FOR_REVALIDATE        # ISR 重新验证令牌
+NEXT_PUBLIC_GOOGLE_*        # Google 服务配置
+NEXT_PUBLIC_UTTERANCES_REPO # 评论系统配置
+```
+
+### API 安全
+-  输入验证
+-  错误处理
+-  Rate limiting（ToDo）
+
+## 主题系统
+```javascript
+// site.config.js
+blog: {
+  scheme: "system" // 'light' | 'dark' | 'system'
+}
+```
+
+## 部署
+
+### 推荐平台
+- **Vercel**
+  - 自动部署
+  - 边缘网络
+  - 环境变量管理
+
+### 部署步骤
+1. Fork 项目到 GitHub
+2. 连接到 Vercel
+3. 配置环境变量
+4. 自动部署
+
+---
+
+**项目地址**: [notionic](https://github.com/MichaelXi3/notionic)  
+**作者**: Void (Michael Xi)  
+**License**: MIT

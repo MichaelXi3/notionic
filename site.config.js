@@ -38,6 +38,9 @@ const CONFIG = {
   },
 
   // plugin configuration (optional)
+  viewCount: {
+    enable: true, // Enable view count feature
+  },
   googleAnalytics: {
     enable: false,
     config: {
